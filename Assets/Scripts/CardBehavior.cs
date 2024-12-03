@@ -12,6 +12,8 @@ public class CardBehavior : MonoBehaviour
     private CardDirectory CardEffects;
     public int APCost;
     private GameController GameController;
+    public bool IsTargetable;
+    public bool IsCreature;
 
     void Start()
     {
@@ -23,12 +25,16 @@ public class CardBehavior : MonoBehaviour
 
     void Update()
     {
+        //This function mainly makes sure that the card follows the mouse cursor
         if (FollowMouse)
         {
             var mouseWorldPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z - 5));
             rb.position = mouseWorldPos;
             if (!RunOnce)
             {
+                //The YVal variable is set when the cards are initially picked up
+                //It is important as it is required for determining whether a card should be played,
+                //or if it should be put back in the hand
                 YVal = transform.position.y;
                 RunOnce = true;
             }
@@ -42,6 +48,8 @@ public class CardBehavior : MonoBehaviour
 
     private void OnMouseDown()
     {
+        //This function is used to determine what happens when a player clicks on a card,
+        //Either the card is sent back to the Hand, or it is played and the card is sent to discard
         if (transform.parent.name == "Position 1" || transform.parent.name == "Position 2" || transform.parent.name == "Position 3" || transform.parent.name == "Position 4" || transform.parent.name == "Position 5")
         {
             if (FollowMouse)
@@ -55,9 +63,17 @@ public class CardBehavior : MonoBehaviour
                     transform.parent = Discard.transform;
                 }
             }
-            else
+            else if (!IsTargetable && !IsCreature)
             {
                 FollowMouse = true;
+            }
+            else if (IsCreature && GameController.PlayerOpenSlots > 0)
+            {
+                CardEffects.SummonCreature(this.gameObject, Effect);
+            }
+            else if (IsTargetable)
+            {
+
             }
         }
     }

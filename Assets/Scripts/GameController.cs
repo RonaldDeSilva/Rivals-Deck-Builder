@@ -3,12 +3,18 @@ using TMPro;
 
 public class GameController : MonoBehaviour
 {
+    //---------The GameController Script is used to keep track of important values,-----------------//
+    //---------as well as make sure all of the cards are moved to the proper piles and such.--------//
+    //---------It also runs the turns system, and Creature attacks.---------------------------------//
+    
+    //Game Objects that are needed for GameController to function
     private GameObject Deck;
-    private GameObject Discard;
+    public GameObject Discard;
     private GameObject Canvas;
     private GameObject EnemyDeck;
     private GameObject EnemyDiscard;
 
+    //Variables relating to the players (And enemy's) Hand
     public int HandSize;
     public bool EmptyHand = true;
     public bool Refresh = false;
@@ -16,23 +22,45 @@ public class GameController : MonoBehaviour
     public bool EnemyRefresh = false;
     public bool PlayersTurn = true;
 
+    //Positions of the cards when they are in your hand
     private GameObject Position1;
     private GameObject Position2;
     private GameObject Position3;
     private GameObject Position4;
     private GameObject Position5;
 
+    //Variables relating to Player and enemy constants
     public int PlayerAPPerTurn;
-    public int PlayerCurrentAP;
     public int EnemyAPPerTurn;
-    public int EnemyCurrentAP;
     public int PlayerHealth;
     public int EnemyHealth;
+    public int PlayerMaxOpenSlots = 4;
+    public int EnemyMaxOpenSlots = 4;
+
+    //Variables relating to current status of Player and Enemy Stats
+    public int PlayerCurrentAP;
+    public int EnemyCurrentAP;
     public int PlayerCurrentHealth;
     public int EnemyCurrentHealth;
+    public int PlayerOpenSlots;
+    public int EnemyOpenSlots;
+
+    //Creature spots for each side
+    public GameObject PlayerTopSlot1;
+    public GameObject PlayerTopSlot2;
+    public GameObject PlayerBottomSlot1;
+    public GameObject PlayerBottomSlot2;
+    public GameObject EnemyTopSlot1;
+    public GameObject EnemyTopSlot2;
+    public GameObject EnemyBottomSlot1;
+    public GameObject EnemyBottomSlot2;
+
+
+
 
     void Start()
     {
+        //Finding all of the necessary Game Objects
         Deck = GameObject.Find("Deck");
         Discard = GameObject.Find("Discard");
         Canvas = GameObject.Find("Canvas");
@@ -47,6 +75,7 @@ public class GameController : MonoBehaviour
 
     void FixedUpdate()
     {
+        //These If statements are for checking to see if the hand is empty and if so replacing the hand when the player has run out of cards
         if (!EmptyHand && !Refresh && PlayersTurn)
         {
             if (Position1.transform.childCount == 0 && Position2.transform.childCount == 0 && Position3.transform.childCount == 0 && Position4.transform.childCount == 0 && Position5.transform.childCount == 0)
@@ -75,8 +104,12 @@ public class GameController : MonoBehaviour
 
     public void DrawCardsToHand()
     {
+        //These two variables are for checking Deck and Discard pile counts
         var DeckCardsNum = Deck.transform.childCount;
         var DiscardNum = Discard.transform.childCount;
+
+        //These if statements are for filling up the hand with random cards from the deck
+        //and/or replacing the deck with cards from the discard pile if the deck is empty
         if (DeckCardsNum >= HandSize)
         {
             var NumChosen = 0;
@@ -128,6 +161,7 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+        //This is run when the Deck is empty and needs to be refilled by the Discard pile
         else if (DiscardNum > 0)
         {
             for (int i = DiscardNum - 1; i > -1; i--)
@@ -142,6 +176,7 @@ public class GameController : MonoBehaviour
 
     public void EnemyDrawCardsToHand()
     {
+        //Ditto but for enemy deck
         var DeckCardsNum = EnemyDeck.transform.childCount;
         var DiscardNum = EnemyDiscard.transform.childCount;
         if (DeckCardsNum >= HandSize)
@@ -209,6 +244,7 @@ public class GameController : MonoBehaviour
 
     public void UpdateNumbers()
     {
+        //This function just updates the UI to reflect changes in Player and Enemy Stat Values
         Canvas.transform.GetChild(0).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = PlayerCurrentHealth.ToString();
         Canvas.transform.GetChild(1).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = EnemyCurrentHealth.ToString();
         Canvas.transform.GetChild(2).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = PlayerCurrentAP.ToString();
@@ -217,6 +253,8 @@ public class GameController : MonoBehaviour
 
     public void EndTurn()
     {
+        //This function is used when the player presses the end turn button,
+        //and makes sure that everything runs smoothly
         if (PlayersTurn == true)
         {
             PlayersTurn = false;
@@ -300,4 +338,5 @@ public class GameController : MonoBehaviour
 
         UpdateNumbers();
     }
+
 }
